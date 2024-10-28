@@ -1,0 +1,19 @@
+import requests
+
+def test_jwks():
+    url = 'http://127.0.0.1:5000/.well-known/jwks.json'
+    response = requests.get(url)
+    print("JWKS Response:", response.json())
+
+def test_auth(expired=False):
+    url = f'http://127.0.0.1:5000/auth?expired={expired}'
+    response = requests.post(url)
+    print("Auth Response:", response.json())
+
+if __name__ == '__main__':
+    print("Testing JWKS endpoint:")
+    test_jwks()
+    print("\nTesting Auth endpoint with valid key:")
+    test_auth()
+    print("\nTesting Auth endpoint with expired key:")
+    test_auth(expired=True)
