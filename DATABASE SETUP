@@ -1,0 +1,35 @@
+import sqlite3
+import datetime
+
+DB_PATH = 'totally_not_my_privateKeys.db'
+
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS keys (
+        kid INTEGER PRIMARY KEY AUTOINCREMENT,
+        key TEXT NOT NULL,
+        exp INTEGER NOT NULL
+    )''')
+    conn.commit()
+    conn.close()
+
+def add_key(key, exp):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO keys (key, exp) VALUES (?, ?)', (key, exp))
+    conn.commit()
+    conn.close()
+
+def get_key(expired=False):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    if expired:
+        cursor.execute('SELECT key FROM keys WHERE exp <= ?', (int(datetime.datetime.now().timestamp()),))
+    else:
+        cursor.execute('SELECT key FROM keys WHERE exp > ?', (int(datetime.datetime.now().timestamp()),))
+    key_row = cursor.fetchone()
+    conn.close()
+    return key_row[0] if key_row else None
+
+init_db()  # Initialize DB when module is imported
