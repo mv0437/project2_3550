@@ -1,0 +1,21 @@
+import jwt
+import datetime
+from db_setup import add_key, get_key
+
+SECRET = "my_secret_key"  # Ideally store securely in environment variables
+
+def generate_and_store_key(expiration_hours=1):
+    exp_time = datetime.datetime.now() + datetime.timedelta(hours=expiration_hours)
+    private_key = jwt.encode({"some": "data"}, SECRET, algorithm="HS256")  # Placeholder private key
+    add_key(private_key, int(exp_time.timestamp()))
+    return private_key
+
+def sign_jwt_with_key(expired=False):
+    private_key = get_key(expired=expired)
+    if not private_key:
+        return None
+    payload = {
+        "user": "userABC",
+        "exp": datetime.datetime.now() + datetime.timedelta(hours=1)
+    }
+    return jwt.encode(payload, private_key, algorithm="HS256")
