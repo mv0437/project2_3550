@@ -1,0 +1,30 @@
+from flask import Flask, jsonify, request
+from auth_utils import generate_and_store_key, sign_jwt_with_key
+
+app = Flask(__name__)
+
+@app.route('/auth', methods=['POST'])
+def authenticate():
+    expired = request.args.get('expired') is not None
+    token = sign_jwt_with_key(expired=expired)
+    if token is None:
+        return jsonify({"error": "No valid key available"}), 400
+    return jsonify({"token": token})
+
+@app.route('/.well-known/jwks.json', methods=['GET'])
+def jwks():
+    # Retrieve valid keys and build JWKS (mocked here for simplicity)
+    valid_key = sign_jwt_with_key(expired=False)
+    if valid_key is None:
+        return jsonify({"error": "No valid keys available"}), 400
+    # Normally, you'd expose only the public part of keys for JWKS
+    return jsonify({
+        "keys": [
+            {"kty": "oct", "k": valid_key, "alg": "HS256"}
+        ]
+    })
+
+if __name__ == '__main__':
+    generate_and_store_key(expiration_hours=0)  # Expired key
+    generate_and_store_key(expiration_hours=1)  # Valid key
+    app.run(debug=True)
