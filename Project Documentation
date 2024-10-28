@@ -1,0 +1,22 @@
+# JWKS Server with SQLite
+
+## Overview
+This project is a JSON Web Key Set (JWKS) server using Flask and SQLite. It stores private keys in a SQLite database, retrieving them for JWT signing.
+
+## Project Structure
+- `app.py` - Main Flask application
+- `db_setup.py` - Database setup and key retrieval functions
+- `auth_utils.py` - JWT signing and key management utilities
+- `test_client.py` - Script to test endpoints
+
+## Endpoints
+- `POST /auth` - Signs JWT with a valid or expired key.
+- `GET /.well-known/jwks.json` - Returns public part of keys in JWKS format.
+
+## Instructions
+1. Install dependencies: `pip install -r requirements.txt`
+2. Run the server: `python app.py`
+3. Test with `python test_client.py`
+
+## Example Outputs
+- Add screenshots here.
